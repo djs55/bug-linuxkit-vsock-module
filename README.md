@@ -1,117 +1,14 @@
 # AF_VSOCK on Hyper-V in v4.14.x bug
 
-There seems to be a bug in v4.14.106 linuxkit kernels and later where `connect` to a
+There seems to be a bug in v4.14.106 and later linuxkit kernels where `connect` to a
 service on the host (e.g. the `vpnkit` ethernet service) fails with `ENODEV`.
- 
-## The last known good kernel
- 
-First build the helper image:
-```
-cd detect
-docker build -t detect .
-```
-
-Second build the .iso:
-```
-linuxkit-windows-amd64.exe build -format iso-efi .\good.yml
-```
-
-Third boot the .iso:
-```
-linuxkit-windows-amd64.exe run good-efi.iso
-```
-
-The VM should probe the `vpnkit` ethernet service and print a message to the console and halt after 5s:
-```
-Welcome to LinuxKit
-
-                        ##         .
-                  ## ## ##        ==
-               ## ## ## ## ##    ===
-           /"""""""""""""""""__/ ===
-          {                       /  ===-
-           _____ O           __/
-                        __/
-              _________/
-
-linuxkit-00155d0a42c2 login: root (automatic login)
-
-[    3.890112] random: crng init done
-Welcome to LinuxKit!
-
-NOTE: This system is namespaced.
-The namespace you are currently in may not be the root.
-System services are namespaced; to access, use `ctr -n services.linuxkit ...`
-linuxkit-00155d0a42c2:~#  _  __                    _   _             _
-| |/ /___ _ __ _ __   ___| | (_)___    ___ | | __
-| ' // _ \ '__| '_ \ / _ \ | | / __|  / _ \| |/ /
-| . \  __/ |  | | | |  __/ | | \__ \ | (_) |   <
-|_|\_\___|_|  |_| |_|\___|_| |_|___/  \___/|_|\_\
-
-[   30.603637] reboot: System halted
-Console returned: No process is on the other end of the pipe.
-
-                                                             Stop the VM
-Remove the VM
-```
-
-## The first known broken kernel
-
- 
-First build the helper image:
-```
-cd detect
-docker build -t detect .
-```
-
-Second build the .iso:
-```
-linuxkit-windows-amd64.exe build -format iso-efi .\bad.yml
-```
-
-Third boot the .iso:
-```
-linuxkit-windows-amd64.exe run bad-efi.iso
-```
-
-The VM should probe the `vpnkit` ethernet service and print a message to the console and halt after 5s:
-```
-__  __
-
-Welcome to LinuxKit
-
-                        ##         .
-                  ## ## ##        ==
-               ## ## ## ## ##    ===
-           /"""""""""""""""""__/ ===
-          {                       /  ===-
-           _____ O           __/
-                        __/
-              _________/
-
-linuxkit-00155d0a42c3 login: root (automatic login)
-
-Welcome to LinuxKit!
-
-NOTE: This system is namespaced.
-The namespace you are currently in may not be the root.
-System services are namespaced; to access, use `ctr -n services.linuxkit ...`
-linuxkit-00155d0a42c3:~# ^[[46;26R[    3.842381] random: crng init done
- _  __                    _   _       _               _                   __
-| |/ /___ _ __ _ __   ___| | (_)___  | |__  _ __ ___ | | _____ _ __    _ / /
-| ' // _ \ '__| '_ \ / _ \ | | / __| | '_ \| '__/ _ \| |/ / _ \ '_ \  (_) |
-| . \  __/ |  | | | |  __/ | | \__ \ | |_) | | | (_) |   <  __/ | | |  _| |
-|_|\_\___|_|  |_| |_|\___|_| |_|___/ |_.__/|_|  \___/|_|\_\___|_| |_| (_) |
-                                                                         \_\
-[   20.506836] reboot: System halted
-```
 
 ## Isolating the problem
 
 Using Docker for Desktop I bisected the v4.14 kernel versions:
 
 | Kernel image                                                            | Working |
-| ------------------------------------------------------------------------+---------|
+| ------------------------------------------------------------------------|---------|
 | linuxkit/kernel:4.14.123-d7a38f4a4f25e7148fe5c799946305aee82cc62b-amd64 | ❌     |
 | linuxkit/kernel:4.14.74-f6eca5e3144dbd3e5dfa9dcc02dfd52d9ce989d8-amd64  | ✔️     |
 | linuxkit/kernel:4.14.99-3bff01b66b00f13d5e2dca04158675bdcc566d1f-amd64  | ✔️     |
@@ -164,6 +61,111 @@ Module                  Size  Used by    Not tainted
 hv_sock                16384 65
 vsock                  36864 68 hv_sock
 ```
+
+## The last known good kernel: v4.14.105
+ 
+First build the helper image:
+```
+cd detect
+docker build -t detect .
+```
+
+Second build the .iso:
+```
+linuxkit-windows-amd64.exe build -format iso-efi .\good.yml
+```
+
+Third boot the .iso:
+```
+linuxkit-windows-amd64.exe run good-efi.iso
+```
+
+The VM should probe the `vpnkit` ethernet service and print a message to the console and halt after 5s:
+```
+Welcome to LinuxKit
+
+                        ##         .
+                  ## ## ##        ==
+               ## ## ## ## ##    ===
+           /"""""""""""""""""__/ ===
+          {                       /  ===-
+           _____ O           __/
+                        __/
+              _________/
+
+linuxkit-00155d0a42c2 login: root (automatic login)
+
+[    3.890112] random: crng init done
+Welcome to LinuxKit!
+
+NOTE: This system is namespaced.
+The namespace you are currently in may not be the root.
+System services are namespaced; to access, use `ctr -n services.linuxkit ...`
+linuxkit-00155d0a42c2:~#  _  __                    _   _             _
+| |/ /___ _ __ _ __   ___| | (_)___    ___ | | __
+| ' // _ \ '__| '_ \ / _ \ | | / __|  / _ \| |/ /
+| . \  __/ |  | | | |  __/ | | \__ \ | (_) |   <
+|_|\_\___|_|  |_| |_|\___|_| |_|___/  \___/|_|\_\
+
+[   30.603637] reboot: System halted
+Console returned: No process is on the other end of the pipe.
+
+                                                             Stop the VM
+Remove the VM
+```
+
+## The first known broken kernel: v4.14.106
+
+ 
+First build the helper image:
+```
+cd detect
+docker build -t detect .
+```
+
+Second build the .iso:
+```
+linuxkit-windows-amd64.exe build -format iso-efi .\bad.yml
+```
+
+Third boot the .iso:
+```
+linuxkit-windows-amd64.exe run bad-efi.iso
+```
+
+The VM should probe the `vpnkit` ethernet service and print a message to the console and halt after 5s:
+```
+__  __
+
+Welcome to LinuxKit
+
+                        ##         .
+                  ## ## ##        ==
+               ## ## ## ## ##    ===
+           /"""""""""""""""""__/ ===
+          {                       /  ===-
+           _____ O           __/
+                        __/
+              _________/
+
+linuxkit-00155d0a42c3 login: root (automatic login)
+
+Welcome to LinuxKit!
+
+NOTE: This system is namespaced.
+The namespace you are currently in may not be the root.
+System services are namespaced; to access, use `ctr -n services.linuxkit ...`
+linuxkit-00155d0a42c3:~# ^[[46;26R[    3.842381] random: crng init done
+ _  __                    _   _       _               _                   __
+| |/ /___ _ __ _ __   ___| | (_)___  | |__  _ __ ___ | | _____ _ __    _ / /
+| ' // _ \ '__| '_ \ / _ \ | | / __| | '_ \| '__/ _ \| |/ / _ \ '_ \  (_) |
+| . \  __/ |  | | | |  __/ | | \__ \ | |_) | | | (_) |   <  __/ | | |  _| |
+|_|\_\___|_|  |_| |_|\___|_| |_|___/ |_.__/|_|  \___/|_|\_\___|_| |_| (_) |
+                                                                         \_\
+[   20.506836] reboot: System halted
+```
+
+
 
 # Conclusion
 
