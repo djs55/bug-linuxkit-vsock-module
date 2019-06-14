@@ -1,6 +1,6 @@
 # AF_VSOCK on Hyper-V in v4.14.x bug
 
-There seems to be a bug in the Hyper-V transport of v4.14.106 and later linuxkit kernels
+There seems to be a bug in the Hyper-V `AF_VSOCK` transport of v4.14.106 and later linuxkit kernels
 where `connect` to a service on the host (e.g. the `vpnkit` ethernet service) fails with `ENODEV`.
 
 ## Isolating the problem
