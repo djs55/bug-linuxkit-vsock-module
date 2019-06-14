@@ -4,4 +4,6 @@ RUN apk add --no-cache musl-dev build-base linux-headers figlet
 COPY . /build
 RUN make -C /build sbin/detect
 
-CMD [ "/build/go.sh" ]
+RUN apk add dos2unix
+RUN dos2unix /build/go.sh
+CMD [ "/bin/sh", "-e", "/build/go.sh" ]
