@@ -62,7 +62,7 @@ hv_sock                16384 65
 vsock                  36864 68 hv_sock
 ```
 
-## The last known good kernel: v4.14.105
+## Example: The last known good kernel: v4.14.105
  
 First build the helper image:
 ```
@@ -82,20 +82,6 @@ linuxkit-windows-amd64.exe run good-efi.iso
 
 The VM should probe the `vpnkit` ethernet service and print a message to the console and halt after 5s:
 ```
-Welcome to LinuxKit
-
-                        ##         .
-                  ## ## ##        ==
-               ## ## ## ## ##    ===
-           /"""""""""""""""""__/ ===
-          {                       /  ===-
-           _____ O           __/
-                        __/
-              _________/
-
-linuxkit-00155d0a42c2 login: root (automatic login)
-
-[    3.890112] random: crng init done
 Welcome to LinuxKit!
 
 NOTE: This system is namespaced.
@@ -114,7 +100,7 @@ Console returned: No process is on the other end of the pipe.
 Remove the VM
 ```
 
-## The first known broken kernel: v4.14.106
+## Example: The first known broken kernel: v4.14.106
 
  
 First build the helper image:
@@ -135,21 +121,6 @@ linuxkit-windows-amd64.exe run bad-efi.iso
 
 The VM should probe the `vpnkit` ethernet service and print a message to the console and halt after 5s:
 ```
-__  __
-
-Welcome to LinuxKit
-
-                        ##         .
-                  ## ## ##        ==
-               ## ## ## ## ##    ===
-           /"""""""""""""""""__/ ===
-          {                       /  ===-
-           _____ O           __/
-                        __/
-              _________/
-
-linuxkit-00155d0a42c3 login: root (automatic login)
-
 Welcome to LinuxKit!
 
 NOTE: This system is namespaced.
