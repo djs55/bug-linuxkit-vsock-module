@@ -1,11 +1,11 @@
 # AF_VSOCK on Hyper-V in v4.14.x bug
 
-There seems to be a bug in v4.14.106 and later linuxkit kernels where `connect` to a
-service on the host (e.g. the `vpnkit` ethernet service) fails with `ENODEV`.
+There seems to be a bug in the Hyper-V transport of v4.14.106 and later linuxkit kernels
+where `connect` to a service on the host (e.g. the `vpnkit` ethernet service) fails with `ENODEV`.
 
 ## Isolating the problem
 
-Using Docker for Desktop I bisected the v4.14 kernel versions:
+Using Docker Desktop on Windows builds I bisected the v4.14 kernel versions:
 
 | Kernel image                                                            | Working |
 | ------------------------------------------------------------------------|---------|
