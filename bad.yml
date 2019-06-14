@@ -1,0 +1,19 @@
+kernel:
+  image: linuxkit/kernel:4.14.106-b80b46e6e616e903291697caebc57725446efa58-amd64
+  cmdline: "console=tty0 console=ttyS0 console=ttyAMA0 console=ttysclp0"
+init:
+  - linuxkit/init:v0.7
+  - linuxkit/runc:v0.7
+  - linuxkit/containerd:v0.7
+  - linuxkit/getty:v0.7
+onboot:
+  - name: sysctl
+    image: linuxkit/sysctl:v0.7
+services:
+  - name: detect
+    image: detect
+    binds:
+    - /dev:/dev
+    capabilities:
+    - CAP_SYS_BOOT
+    pid: host
