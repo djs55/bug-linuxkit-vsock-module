@@ -101,7 +101,6 @@ static int connect_vsocket(long port)
 		if (errno == ENODEV){
 			ERROR("connect failed with ENODEV: this kernel is broken");
 			/* On some kernels this process cannot be killed because of another AF_VSOCK bug */
-			system("/build/result-bad.sh");
 			exit(-1);
 		}
 		INFO("connect failed with %s: is vpnkit running on Windows?", strerror(errno));
@@ -174,6 +173,5 @@ int main(int argc, char **argv)
 		vif.mac[3], vif.mac[4], vif.mac[5]
 	);
 	/* On some kernels this process cannot exit due to another AF_VSOCK bug. */
-	system("/build/result-good.sh");
 	exit(0);
 }
